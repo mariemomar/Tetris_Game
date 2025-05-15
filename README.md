@@ -1,7 +1,5 @@
 # Tetris AI with Genetic Algorithm
 
-![Tetris Gameplay Screenshot](screenshot.png) *(optional: add actual screenshot later)*
-
 An implementation of Tetris where an AI player is trained using genetic algorithms to develop optimal playing strategies.
 
 ## Table of Contents
