@@ -167,7 +167,7 @@ PIECES = {'S': S_SHAPE_TEMPLATE,
           'T': T_SHAPE_TEMPLATE}
 
 # Define if the game is manual or not
-MANUAL_GAME = True
+MANUAL_GAME = True 
 
 ##############################################################################
 # MAIN GAME
@@ -751,7 +751,3 @@ def calc_sides_in_contact(board, piece):
                     #(nao pode haver pecas em cima)
 
     return  piece_sides, floor_sides, wall_sides
-
-
-if __name__ == "__main__":
-    main()

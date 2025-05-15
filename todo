@@ -1,0 +1,6 @@
+initialize board and pieces and score  (run function)
+make function to evaluate the state of the current board
+make population 
+make selection function
+make crossover function
+choose the best choromosomes 
