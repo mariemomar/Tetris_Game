@@ -313,7 +313,7 @@ def run_game():
                 add_to_board(board, falling_piece)
                 num_removed_lines = remove_complete_lines(board)
 
-                # Bonus score for complete lines at once
+                # Bonus  for complete lines at once
                 # 40   pts for 1 line
                 # 120  pts for 2 lines
                 # 300  pts for 3 lines

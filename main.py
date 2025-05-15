@@ -43,3 +43,15 @@ def crossover(parent1, parent2):
     return chromosome(weights=child_weights)
 
 
+
+class GA_algorithm :
+    def __init__(self , population_size , mutation_rate , generations , weights=None):
+        self.population_size = population_size
+        self.mutation_rate = mutation_rate
+        self.generations = generations
+        self.weights = weights
+
+    def creat_population(self , population_size) : 
+        return [chromosome(weights=self.weights) for _ in range(population_size)]
+
+    
