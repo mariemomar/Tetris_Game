@@ -24,10 +24,10 @@ The AI uses a genetic algorithm to evolve optimal weights for evaluating Tetris 
 
 1. **Board Metrics**:
    - Maximum height
-   - Difference between maximum height
-   - Minimum height
-   - Number of full lines
-   - Number of gaps
+   - Total height
+   - Bumpiness
+   - Holes
+   - Future risk
 
 2. **Genetic Algorithm**:
    - Population size: 12 chromosomes
