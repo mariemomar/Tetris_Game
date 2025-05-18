@@ -86,14 +86,14 @@ def future_risk(board):
     if max_height >= 22 : 
         return abs((BOARDHEIGHT - max_height) - 4)   # we have 4 level of risk , 4 is game over 
 
-def evaluate_board(board, lines_cleared, contribution_factors): # the minimum score is better 
+def evaluate_board(board, contribution_factors): # the minimum score is better 
     heights = column_heights(board)
     max_height = max(heights)
     risk = future_risk(board)
     bumpiness = sum([abs(heights[i] - heights[i+1]) for i in range(len(heights)-1)])
     total_height = sum(heights)
     holes = count_holes(board)
-    features = [lines_cleared, holes, total_height, max_height, bumpiness , risk]
+    features = [holes, total_height, max_height, bumpiness , risk]
 
     score = sum([f * w for f, w in zip(features, contribution_factors)])
     return score
