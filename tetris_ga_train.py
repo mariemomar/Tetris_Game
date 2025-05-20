@@ -10,9 +10,9 @@ np.random.seed(RANDOM_SEED_GA)
 
 POPULATION_SIZE = 20  # >= 12
 MUTATION_RATE = 0.1
-GENERATIONS = 15  # >= 10
+GENERATIONS = 30  # >= 10
 NUM_PIECES_TRAIN = 500  # 300-500
-ELITISM_COUNT = 2
+ELITISM_COUNT = 3
 
 
 WEIGHT_KEYS = [
@@ -33,13 +33,14 @@ class Chromosome:
         self.weights = {}
         if weights_dict is None:
             for key in WEIGHT_KEYS:
-                self.weights[key] = random.uniform(-1.0, 1.0)  # Initial range
+                self.weights[key] = random.uniform(-2.0, 2.0)  # Initial range
         else:
             self.weights = weights_dict.copy()
 
         self.fitness = 0.0
         self.lines_cleared_in_game = 0
         self.pieces_played_in_game = 0
+        self.score_in_game = 0  # Track total score
 
     def get_ordered_weights_values(self):
         return [self.weights[key] for key in WEIGHT_KEYS]
@@ -50,6 +51,18 @@ class Chromosome:
                 change = random.uniform(-0.3, 0.3)  # Mutation step size
                 self.weights[key] += change
         return self
+
+
+def calculate_score(lines_cleared_this_move):
+    if lines_cleared_this_move == 1:
+        return 40
+    elif lines_cleared_this_move == 2:
+        return 120
+    elif lines_cleared_this_move == 3:
+        return 300
+    elif lines_cleared_this_move == 4:
+        return 1200
+    return 0
 
 
 def crossover(parent1, parent2):
@@ -86,10 +99,7 @@ def count_holes(board_col_major):
 
 def get_risk_near_top(board_col_major):
     col_heights = get_column_heights(board_col_major)
-    if not col_heights:
-        return 0
-
-    max_h = max(col_heights) if col_heights else 0
+    max_h = max(col_heights)
     if max_h >= BOARDHEIGHT - 4:
         return (max_h - (BOARDHEIGHT - 5)) * 2
     return 0
@@ -101,7 +111,7 @@ def evaluate_board_state(
     col_heights = get_column_heights(board_col_major)
 
     aggregate_height = sum(col_heights)
-    max_col_h = max(col_heights) if col_heights else 0
+    max_col_h = max(col_heights) 
 
     bumpiness = 0
     if len(col_heights) > 1:
@@ -128,6 +138,7 @@ def simulate_game_for_chromosome(chromosome, max_game_pieces):
     current_board_col_major = get_blank_board()
     total_lines_cleared_game = 0
     pieces_played_game = 0
+    total_score_game = 0
 
     for _ in range(max_game_pieces):
         current_falling_piece = get_new_piece()
@@ -210,13 +221,29 @@ def simulate_game_for_chromosome(chromosome, max_game_pieces):
 
         _final_piece_state, current_board_col_major, lines_this_turn = best_move_details
         total_lines_cleared_game += lines_this_turn
+        total_score_game += calculate_score(lines_this_turn)
         pieces_played_game += 1
 
-    return total_lines_cleared_game, pieces_played_game
+    return total_lines_cleared_game, pieces_played_game, total_score_game
 
 
-def calculate_fitness(lines_cleared, pieces_played):
-    return (lines_cleared**2) + pieces_played
+def calculate_fitness(pieces_played, score):
+    return score + (pieces_played * 5)
+
+
+def select_chromosomes(population, elitism_count, population_size, tournament_size):
+    elite_chromosomes = [
+        Chromosome(weights_dict=population[i].weights) for i in range(elitism_count)
+    ]
+
+    num_to_breed = population_size - len(elite_chromosomes)
+
+    parent_pool = []
+    for _ in range(num_to_breed * 2):
+        contenders = random.sample(population, tournament_size)
+        parent_pool.append(max(contenders, key=lambda c: c.fitness))
+
+    return elite_chromosomes, parent_pool
 
 
 def run_genetic_algorithm():
@@ -229,19 +256,20 @@ def run_genetic_algorithm():
     print(header)
     log_entries.append(header)
     log_entries.append(
-        "Generation,Best Fitness (Raw),Lines Cleared (Best),Pieces Played (Best),Best Chromo Weights\n"
+        "Generation,Best Fitness (Raw),Second-Best Fitness (Raw),Lines Cleared (Best),Pieces Played (Best),Best Chromo Weights\n"
     )
 
     for gen_idx in range(GENERATIONS):
         print(f"\n=== Generation {gen_idx + 1}/{GENERATIONS} ===")
 
         for chromo_idx, chromo in enumerate(population):
-            lines_cleared, pieces_played = simulate_game_for_chromosome(
+            lines_cleared, pieces_played, score = simulate_game_for_chromosome(
                 chromo, NUM_PIECES_TRAIN
             )
-            chromo.fitness = calculate_fitness(lines_cleared, pieces_played)
+            chromo.fitness = calculate_fitness(pieces_played, score)
             chromo.lines_cleared_in_game = lines_cleared
             chromo.pieces_played_in_game = pieces_played
+            chromo.score_in_game = score
 
         population.sort(key=lambda c: c.fitness, reverse=True)
 
@@ -250,15 +278,18 @@ def run_genetic_algorithm():
         gen_summary = (
             f"  Best this Gen: Fitness={current_gen_best_chromosome.fitness:.0f}, "
             f"Lines={current_gen_best_chromosome.lines_cleared_in_game}, "
-            f"Pieces={current_gen_best_chromosome.pieces_played_in_game}"
+            f"Pieces={current_gen_best_chromosome.pieces_played_in_game}, "
+            f"Score={current_gen_best_chromosome.score_in_game}"
         )
         print(gen_summary)
 
         log_line_content = (
             f"{gen_idx + 1},"
             f"{current_gen_best_chromosome.fitness:.2f},"
+            f"{population[1].fitness:.2f},"
             f"{current_gen_best_chromosome.lines_cleared_in_game},"
             f"{current_gen_best_chromosome.pieces_played_in_game},"
+            f"{current_gen_best_chromosome.score_in_game},"
             f'"{json.dumps(current_gen_best_chromosome.weights)}"'
         )
         log_entries.append(log_line_content + "\n")
@@ -275,48 +306,33 @@ def run_genetic_algorithm():
             best_overall_chromosome.pieces_played_in_game = (
                 current_gen_best_chromosome.pieces_played_in_game
             )
-            print(f"  *** NEW OVERALL BEST FOUND! ***")
-
-        next_generation_population = []
-
-        for i in range(min(ELITISM_COUNT, len(population))):
-            next_generation_population.append(
-                Chromosome(weights_dict=population[i].weights)
+            best_overall_chromosome.score_in_game = (
+                current_gen_best_chromosome.score_in_game
             )
 
-        num_to_breed = POPULATION_SIZE - len(next_generation_population)
+            print(f"  *** NEW OVERALL BEST FOUND! ***")
 
-        parent_pool = []
-        tournament_size = 3
-        for _ in range(num_to_breed * 2):
-            if len(population) < tournament_size:
-                parent_pool.extend(population)
-            else:
-                tournament_contenders = random.sample(population, tournament_size)
-                parent_pool.append(max(tournament_contenders, key=lambda c: c.fitness))
+        # Selection
+        elite_chromosomes, parent_pool = select_chromosomes(
+            population, ELITISM_COUNT, POPULATION_SIZE, tournament_size=3
+        )
 
-        for i in range(0, num_to_breed):
-            if len(parent_pool) < 2:
-                p1 = population[0]
-                p2 = (
-                    population[random.randint(0, min(1, len(population) - 1))]
-                    if len(population) > 1
-                    else population[0]
-                )
+        next_generation_population = elite_chromosomes
 
-            else:
-                p1_idx = random.randrange(len(parent_pool))
+        num_to_breed = POPULATION_SIZE - len(elite_chromosomes)
+        for i in range(num_to_breed):
+            p1_idx = random.randrange(len(parent_pool))
+            p2_idx = random.randrange(len(parent_pool))
+            while p2_idx == p1_idx and len(parent_pool) > 1:
                 p2_idx = random.randrange(len(parent_pool))
-                while p2_idx == p1_idx and len(parent_pool) > 1:
-                    p2_idx = random.randrange(len(parent_pool))
-                p1 = parent_pool[p1_idx]
-                p2 = parent_pool[p2_idx]
+            p1 = parent_pool[p1_idx]
+            p2 = parent_pool[p2_idx]
 
             child = crossover(p1, p2)
             child.mutate(MUTATION_RATE)
             next_generation_population.append(child)
 
-        population = next_generation_population[:POPULATION_SIZE]
+        population = next_generation_population
 
     print("\n=== TRAINING COMPLETE ===")
     if best_overall_chromosome:
@@ -329,6 +345,8 @@ def run_genetic_algorithm():
         print(
             f"  Pieces Played in Game: {best_overall_chromosome.pieces_played_in_game}"
         )
+        print(f"  Score in Game: {best_overall_chromosome.score_in_game}")
+
         print("  Optimal Weights:")
         for k, v in best_overall_chromosome.weights.items():
             print(f"    {k}: {v:.4f}")
@@ -338,6 +356,7 @@ def run_genetic_algorithm():
             f"Fitness (Raw): {best_overall_chromosome.fitness:.0f}\n"
             f"Lines Cleared: {best_overall_chromosome.lines_cleared_in_game}\n"
             f"Pieces Played: {best_overall_chromosome.pieces_played_in_game}\n"
+            f"Score: {best_overall_chromosome.score_in_game}\n"
             f"Weights: {json.dumps(best_overall_chromosome.weights, indent=4)}\n"
         )
         log_entries.append(final_log_summary)
@@ -345,10 +364,6 @@ def run_genetic_algorithm():
         with open(OPTIMAL_WEIGHTS_FILE, "w") as f:
             json.dump(best_overall_chromosome.weights, f, indent=4)
         print(f"\nOptimal weights saved to {OPTIMAL_WEIGHTS_FILE}")
-    else:
-        no_best_msg = "No best chromosome found (this typically means the GA didn't run or an error occurred)."
-        print(no_best_msg)
-        log_entries.append(no_best_msg + "\n")
 
     with open(LOG_FILE, "w") as f:
         f.writelines(log_entries)
@@ -358,7 +373,4 @@ def run_genetic_algorithm():
 if __name__ == "__main__":
     MANUAL_GAME = False
 
-    print(
-        f"Running GA with MANUAL_GAME = {MANUAL_GAME} (from tetris_ga_train.py context)"
-    )
     run_genetic_algorithm()
