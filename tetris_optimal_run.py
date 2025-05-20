@@ -44,13 +44,11 @@ def main_optimal_execution():
 
     optimal_player = OptimalPlayerLogic(weights_dict=loaded_optimal_weights)
 
-    # Reuse simulate_game_for_chromosome
     lines_cleared, pieces_played, score = simulate_game_for_chromosome(
         optimal_player, NUM_PIECES_TEST
     )
     fitness = calculate_fitness(pieces_played, score)
 
-    # Update player attributes for logging
     optimal_player.lines_cleared_in_game = lines_cleared
     optimal_player.pieces_played_in_game = pieces_played
     optimal_player.score_in_game = score

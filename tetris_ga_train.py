@@ -40,7 +40,7 @@ class Chromosome:
         self.fitness = 0.0
         self.lines_cleared_in_game = 0
         self.pieces_played_in_game = 0
-        self.score_in_game = 0  # Track total score
+        self.score_in_game = 0  
 
     def get_ordered_weights_values(self):
         return [self.weights[key] for key in WEIGHT_KEYS]
