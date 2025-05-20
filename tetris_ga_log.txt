@@ -1,20 +1,30 @@
-GA Settings: Pop=20, Gens=5, Pieces/Game=500, MutationRate=0.1, Elitism=2, GA_Seed=42
+GA Settings: Pop=20, Gens=15, Pieces/Game=500, MutationRate=0.1, Elitism=2, GA_Seed=42
 Generation,Best Fitness (Raw),Lines Cleared (Best),Pieces Played (Best),Best Chromo Weights
-1,13796.00,116,340,"{"w_lines_cleared_move": 0.7843591354096908, "w_holes_total": -0.8261223347411677, "w_aggregate_height": -0.15615636062945915, "w_max_col_height": -0.9404055611238593, "w_bumpiness_total": -0.5627240503927933, "w_risk_near_top": 0.010710576206724776}"
-2,14025.00,117,336,"{"w_lines_cleared_move": 0.27136888852880037, "w_holes_total": -0.5668009795648878, "w_aggregate_height": -0.2596380657662347, "w_max_col_height": -0.5809859384570246, "w_bumpiness_total": -0.4660443559017733, "w_risk_near_top": 0.873309175424988}"
-3,36221.00,189,500,"{"w_lines_cleared_move": 0.27136888852880037, "w_holes_total": -0.5668009795648878, "w_aggregate_height": -0.840416046152745, "w_max_col_height": -0.5809859384570246, "w_bumpiness_total": -0.4660443559017733, "w_risk_near_top": 0.873309175424988}"
-4,37749.00,193,500,"{"w_lines_cleared_move": 0.27136888852880037, "w_holes_total": -0.5410441814146277, "w_aggregate_height": -0.840416046152745, "w_max_col_height": -0.5809859384570246, "w_bumpiness_total": -0.4660443559017733, "w_risk_near_top": 0.873309175424988}"
-5,38525.00,195,500,"{"w_lines_cleared_move": -0.5442034486969063, "w_holes_total": -0.42122407279578566, "w_aggregate_height": -0.840416046152745, "w_max_col_height": -0.5344182272779396, "w_bumpiness_total": -0.4660443559017733, "w_risk_near_top": 0.010710576206724776}"
+1,18616.00,135,391,"{"w_lines_cleared_move": -0.5419038560717913, "w_holes_total": -0.9357995121919245, "w_aggregate_height": -0.36909390388183616, "w_max_col_height": -0.46451824804859454, "w_bumpiness_total": -0.5780343128273471, "w_risk_near_top": 0.8858194286701089}"
+2,35844.00,188,500,"{"w_lines_cleared_move": -0.5419038560717913, "w_holes_total": -0.9357995121919245, "w_aggregate_height": -0.36909390388183616, "w_max_col_height": -0.46451824804859454, "w_bumpiness_total": -0.5780343128273471, "w_risk_near_top": -0.13046949866179003}"
+3,38525.00,195,500,"{"w_lines_cleared_move": -0.4702396670038951, "w_holes_total": -0.9357995121919245, "w_aggregate_height": -0.36909390388183616, "w_max_col_height": -0.46451824804859454, "w_bumpiness_total": -0.29081139649012616, "w_risk_near_top": 0.8858194286701089}"
+4,39704.00,198,500,"{"w_lines_cleared_move": -0.4702396670038951, "w_holes_total": -0.9357995121919245, "w_aggregate_height": -0.36909390388183616, "w_max_col_height": -0.46451824804859454, "w_bumpiness_total": -0.29081139649012616, "w_risk_near_top": 0.8858194286701089}"
+5,39309.00,197,500,"{"w_lines_cleared_move": -0.4702396670038951, "w_holes_total": -0.9357995121919245, "w_aggregate_height": -0.36909390388183616, "w_max_col_height": -0.46451824804859454, "w_bumpiness_total": -0.29081139649012616, "w_risk_near_top": 0.8858194286701089}"
+6,39704.00,198,500,"{"w_lines_cleared_move": -0.4702396670038951, "w_holes_total": -1.3153216819401385, "w_aggregate_height": -0.36909390388183616, "w_max_col_height": -0.46451824804859454, "w_bumpiness_total": -0.29081139649012616, "w_risk_near_top": 0.8858194286701089}"
+7,40101.00,199,500,"{"w_lines_cleared_move": -0.4702396670038951, "w_holes_total": -1.3153216819401385, "w_aggregate_height": -0.036941173055023035, "w_max_col_height": -0.46451824804859454, "w_bumpiness_total": -0.29081139649012616, "w_risk_near_top": 0.8858194286701089}"
+8,40101.00,199,500,"{"w_lines_cleared_move": -0.5001102607694256, "w_holes_total": -1.3153216819401385, "w_aggregate_height": -0.38716343802562514, "w_max_col_height": -0.3913346624855939, "w_bumpiness_total": -0.21362980067104714, "w_risk_near_top": 0.6600520332289673}"
+9,40101.00,199,500,"{"w_lines_cleared_move": -0.5001102607694256, "w_holes_total": -1.1726743967850384, "w_aggregate_height": -0.263555343374303, "w_max_col_height": -0.46451824804859454, "w_bumpiness_total": -0.21362980067104714, "w_risk_near_top": 0.8858194286701089}"
+10,39309.00,197,500,"{"w_lines_cleared_move": -0.5001102607694256, "w_holes_total": -1.3153216819401385, "w_aggregate_height": -0.2767031592312971, "w_max_col_height": -0.46451824804859454, "w_bumpiness_total": -0.21362980067104714, "w_risk_near_top": 0.6302152126192719}"
+11,40101.00,199,500,"{"w_lines_cleared_move": -0.17398796500219554, "w_holes_total": -0.9357995121919245, "w_aggregate_height": -0.36909390388183616, "w_max_col_height": -0.28764504033659677, "w_bumpiness_total": -0.29081139649012616, "w_risk_near_top": 0.8858194286701089}"
+12,39704.00,198,500,"{"w_lines_cleared_move": -0.5001102607694256, "w_holes_total": -1.3153216819401385, "w_aggregate_height": -0.38716343802562514, "w_max_col_height": -0.46451824804859454, "w_bumpiness_total": -0.21362980067104714, "w_risk_near_top": 0.6302152126192719}"
+13,39704.00,198,500,"{"w_lines_cleared_move": -0.5001102607694256, "w_holes_total": -1.5604970075856086, "w_aggregate_height": -0.2767031592312971, "w_max_col_height": -0.4388481675956752, "w_bumpiness_total": -0.29081139649012616, "w_risk_near_top": 0.6302152126192719}"
+14,40101.00,199,500,"{"w_lines_cleared_move": -0.2940689265215916, "w_holes_total": -1.3153216819401385, "w_aggregate_height": -0.38716343802562514, "w_max_col_height": -0.28764504033659677, "w_bumpiness_total": -0.29081139649012616, "w_risk_near_top": 0.9122638580966134}"
+15,40101.00,199,500,"{"w_lines_cleared_move": -0.4702396670038951, "w_holes_total": -1.3153216819401385, "w_aggregate_height": -0.4270155315954516, "w_max_col_height": -0.5628063401666151, "w_bumpiness_total": -0.29081139649012616, "w_risk_near_top": 0.6302152126192719}"
 
 === BEST OVERALL CHROMOSOME ===
-Fitness (Raw): 38525
-Lines Cleared: 195
+Fitness (Raw): 40101
+Lines Cleared: 199
 Pieces Played: 500
 Weights: {
-    "w_lines_cleared_move": -0.5442034486969063,
-    "w_holes_total": -0.42122407279578566,
-    "w_aggregate_height": -0.840416046152745,
-    "w_max_col_height": -0.5344182272779396,
-    "w_bumpiness_total": -0.4660443559017733,
-    "w_risk_near_top": 0.010710576206724776
+    "w_lines_cleared_move": -0.4702396670038951,
+    "w_holes_total": -1.3153216819401385,
+    "w_aggregate_height": -0.036941173055023035,
+    "w_max_col_height": -0.46451824804859454,
+    "w_bumpiness_total": -0.29081139649012616,
+    "w_risk_near_top": 0.8858194286701089
 }

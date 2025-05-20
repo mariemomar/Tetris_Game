@@ -1,0 +1,13 @@
+Successfully loaded optimal weights for the run:
+  w_lines_cleared_move: -0.4702
+  w_holes_total: -1.3153
+  w_aggregate_height: -0.0369
+  w_max_col_height: -0.4645
+  w_bumpiness_total: -0.2908
+  w_risk_near_top: 0.8858
+Starting optimal run: Target pieces=100, Piece Seed=42
+
+--- OPTIMAL RUN COMPLETE ---
+Pieces Played: 18/100
+Total Lines Cleared: 0
+Total Lines Score: 0
