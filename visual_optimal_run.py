@@ -7,9 +7,9 @@ from tetris_ga_train import evaluate_board_state, WEIGHT_KEYS
 
 # Constants
 OPTIMAL_RUN_PIECE_SEED = 42
-NUM_PIECES_TEST = 600
+NUM_PIECES_TEST = 100
 OPTIMAL_WEIGHTS_FILE = "optimal_tetris_weights.json"
-FPS = 60  # Increased for smoother, faster rendering
+FPS = 30  # Increased for smoother, faster rendering
 WINDOWWIDTH = 650
 WINDOWHEIGHT = 690
 BOXSIZE = 25

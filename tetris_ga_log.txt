@@ -1,0 +1,20 @@
+GA Settings: Pop=20, Gens=5, Pieces/Game=500, MutationRate=0.1, Elitism=2, GA_Seed=42
+Generation,Best Fitness (Raw),Lines Cleared (Best),Pieces Played (Best),Best Chromo Weights
+1,13796.00,116,340,"{"w_lines_cleared_move": 0.7843591354096908, "w_holes_total": -0.8261223347411677, "w_aggregate_height": -0.15615636062945915, "w_max_col_height": -0.9404055611238593, "w_bumpiness_total": -0.5627240503927933, "w_risk_near_top": 0.010710576206724776}"
+2,14025.00,117,336,"{"w_lines_cleared_move": 0.27136888852880037, "w_holes_total": -0.5668009795648878, "w_aggregate_height": -0.2596380657662347, "w_max_col_height": -0.5809859384570246, "w_bumpiness_total": -0.4660443559017733, "w_risk_near_top": 0.873309175424988}"
+3,36221.00,189,500,"{"w_lines_cleared_move": 0.27136888852880037, "w_holes_total": -0.5668009795648878, "w_aggregate_height": -0.840416046152745, "w_max_col_height": -0.5809859384570246, "w_bumpiness_total": -0.4660443559017733, "w_risk_near_top": 0.873309175424988}"
+4,37749.00,193,500,"{"w_lines_cleared_move": 0.27136888852880037, "w_holes_total": -0.5410441814146277, "w_aggregate_height": -0.840416046152745, "w_max_col_height": -0.5809859384570246, "w_bumpiness_total": -0.4660443559017733, "w_risk_near_top": 0.873309175424988}"
+5,38525.00,195,500,"{"w_lines_cleared_move": -0.5442034486969063, "w_holes_total": -0.42122407279578566, "w_aggregate_height": -0.840416046152745, "w_max_col_height": -0.5344182272779396, "w_bumpiness_total": -0.4660443559017733, "w_risk_near_top": 0.010710576206724776}"
+
+=== BEST OVERALL CHROMOSOME ===
+Fitness (Raw): 38525
+Lines Cleared: 195
+Pieces Played: 500
+Weights: {
+    "w_lines_cleared_move": -0.5442034486969063,
+    "w_holes_total": -0.42122407279578566,
+    "w_aggregate_height": -0.840416046152745,
+    "w_max_col_height": -0.5344182272779396,
+    "w_bumpiness_total": -0.4660443559017733,
+    "w_risk_near_top": 0.010710576206724776
+}

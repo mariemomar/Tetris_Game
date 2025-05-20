@@ -123,21 +123,26 @@ def evaluate_board_state(
     score = sum(f * w for f, w in zip(features, ordered_weights_list))
     return score
 
+#!=========================================================================================
+#!=========================================================================================
+#!=========================================================================================
 
 def simulate_game_for_chromosome(chromosome, max_game_pieces):
     current_board_col_major = get_blank_board()
     total_lines_cleared_game = 0
     pieces_played_game = 0
+    next_piece = get_new_piece()
 
     for _ in range(max_game_pieces):
         current_falling_piece = get_new_piece()
+        next_piece = get_new_piece()
 
         if not is_valid_position(
             current_board_col_major, current_falling_piece, adj_X=0, adj_Y=0
         ):
             break
 
-        best_move_score = float("inf")
+        best_move_score = -float("inf")
         best_move_details = None
 
         for rot_idx in range(len(PIECES[current_falling_piece["shape"]])):
@@ -182,29 +187,87 @@ def simulate_game_for_chromosome(chromosome, max_game_pieces):
                 if not safe_to_add:
                     continue
 
-                temp_board_col_major = [
+                temp_board_after_current = [
                     col_data[:] for col_data in current_board_col_major
                 ]
-                add_to_board(temp_board_col_major, sim_piece_to_drop)
+                add_to_board(temp_board_after_current, sim_piece_to_drop)
 
                 lines_cleared_by_this_specific_move = remove_complete_lines(
-                    temp_board_col_major
+                    temp_board_after_current
                 )
 
-                current_evaluated_score = evaluate_board_state(
-                    temp_board_col_major,
+                #todo : start calculate the new piece 
+                best_next_score = -float("inf")
+                
+                if pieces_played_game + 1 < max_game_pieces:  # If game will continue
+                    for next_rot_idx in range(len(PIECES[next_piece["shape"]])):
+                        next_piece_rotated = dict(next_piece)
+                        next_piece_rotated["rotation"] = next_rot_idx
+
+                        for next_x in range(-TEMPLATEWIDTH + 1, BOARDWIDTH):
+                            next_piece_at_x = dict(next_piece_rotated)
+                            next_piece_at_x["x"] = next_x
+                            next_piece_at_x["y"] = -2
+
+                            # Drop the next piece
+                            sim_next_piece = dict(next_piece_at_x)
+                            while is_valid_position(temp_board_after_current, sim_next_piece, adj_Y=1):
+                                sim_next_piece["y"] += 1
+
+                            if not is_valid_position(temp_board_after_current, sim_next_piece, adj_Y=0):
+                                continue
+                            
+                            new_save_to_add = True
+                            shape_template_for_check = PIECES[sim_next_piece["shape"]][
+                            sim_next_piece["rotation"]
+                            ]
+                            for y_tpl_check in range(TEMPLATEHEIGHT):
+                                for x_tpl_check in range(TEMPLATEWIDTH):
+                                    if shape_template_for_check[y_tpl_check][x_tpl_check] != BLANK:
+                                        board_x_final = x_tpl_check + sim_next_piece["x"]
+                                        board_y_final = y_tpl_check + sim_next_piece["y"]
+
+                                        if not (
+                                            0 <= board_x_final < BOARDWIDTH
+                                            and 0 <= board_y_final < BOARDHEIGHT
+                                        ):
+                                            new_save_to_add = False
+                                            break
+                                if not new_save_to_add:
+                                    break
+
+                            if not new_save_to_add:
+                                continue
+
+                            temp_board_after_next = [col_data[:] for col_data in temp_board_after_current]
+                            add_to_board(temp_board_after_next, sim_next_piece)
+                            lines_cleared_next = remove_complete_lines(temp_board_after_next)
+
+                            next_score = evaluate_board_state(
+                                temp_board_after_next,
+                                lines_cleared_next,
+                                chromosome.get_ordered_weights_values()
+                            )
+                            
+                            if next_score > best_next_score:
+                                best_next_score = next_score
+                else : 
+                    best_next_score = 0  # no more pieces to drop
+
+                current_score = evaluate_board_state(
+                    temp_board_after_current,
                     lines_cleared_by_this_specific_move,
-                    chromosome.get_ordered_weights_values(),
-                )
+                    chromosome.get_ordered_weights_values()
+                    )
+                combined_score = current_score * 0.7 + best_next_score * 0.3
 
-                if current_evaluated_score < best_move_score:
-                    best_move_score = current_evaluated_score
+                if combined_score > best_move_score:
+                    best_move_score = combined_score
                     best_move_details = (
                         sim_piece_to_drop,
-                        temp_board_col_major,
+                        temp_board_after_current,
                         lines_cleared_by_this_specific_move,
-                    )
-
+                    )    
         if best_move_details is None:
             break
 
@@ -212,8 +275,13 @@ def simulate_game_for_chromosome(chromosome, max_game_pieces):
         total_lines_cleared_game += lines_this_turn
         pieces_played_game += 1
 
+
+
     return total_lines_cleared_game, pieces_played_game
 
+#!===========================================================================================================
+#!===========================================================================================================
+#!===========================================================================================================
 
 def calculate_fitness(lines_cleared, pieces_played):
     return (lines_cleared**2) + pieces_played
