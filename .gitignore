@@ -3,7 +3,26 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints
-
+# VSCode settings
 .vscode/
+
+# Environment files
+.env
+.venv/
+venv/
+
+# MacOS files
+.DS_Store
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Editor swap/backup files
+*.swp
+*~
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/

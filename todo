@@ -1,6 +1,0 @@
-initialize board and pieces and score  (run function)  ✅
-make function to evaluate the state of the current board  # Done but still need to add next piece logic as mentioned in the rating function section
-make population ✅
-make selection function ✅
-make crossover function ✅
-choose the best choromosomes ✅ 

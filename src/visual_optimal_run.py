@@ -3,31 +3,26 @@ import json
 import pygame
 import time
 import tetris_base
-from tetris_ga_train import evaluate_board_state, WEIGHT_KEYS
+from tetris_base import *
+from tetris_ga_train import WEIGHT_KEYS, evaluate_board_state, calculate_score
 
 # Constants
 OPTIMAL_RUN_PIECE_SEED = 42
 NUM_PIECES_TEST = 600
-OPTIMAL_WEIGHTS_FILE = "optimal_tetris_weights.json"
-FPS = 60  # Increased for smoother, faster rendering
-WINDOWWIDTH = 650
-WINDOWHEIGHT = 690
-BOXSIZE = 25
-BOARDWIDTH = 10
-BOARDHEIGHT = 25
-XMARGIN = int((WINDOWWIDTH - BOARDWIDTH * BOXSIZE) / 2)
-TOPMARGIN = WINDOWHEIGHT - (BOARDHEIGHT * BOXSIZE) - 5
-BGCOLOR = (0, 0, 0)  # BLACK
-BORDERCOLOR = (0, 0, 155)  # BLUE
-TEXTCOLOR = (255, 255, 255)  # WHITE
+OPTIMAL_WEIGHTS_FILE = "../reports/optimal_tetris_weights.json"
+FPS = 60
 FALL_DELAY = 0
+
+
+# Set random seed
+random.seed(OPTIMAL_RUN_PIECE_SEED)
 
 # Initialize Pygame
 try:
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
-    BASICFONT = pygame.font.SysFont("arial", 18)  # Fallback to Arial
+    BASICFONT = pygame.font.SysFont("arial", 18)
     pygame.display.set_caption("Tetris AI - Optimal Run")
 except Exception as e:
     print(f"ERROR: Failed to initialize Pygame: {e}")
@@ -41,20 +36,6 @@ tetris_base.BGCOLOR = BGCOLOR
 tetris_base.BORDERCOLOR = BORDERCOLOR
 tetris_base.TEXTCOLOR = TEXTCOLOR
 
-# Set random seed
-random.seed(OPTIMAL_RUN_PIECE_SEED)
-
-# Scoring function
-def get_lines_score(lines):
-    if lines == 1:
-        return 40
-    elif lines == 2:
-        return 120
-    elif lines == 3:
-        return 300
-    elif lines == 4:
-        return 1200
-    return 0
 
 class OptimalPlayerLogic:
     def __init__(self, weights_dict):
@@ -63,12 +44,13 @@ class OptimalPlayerLogic:
     def get_ordered_weights_values(self):
         return [self.weights[key] for key in WEIGHT_KEYS]
 
-def simulate_optimal_game_run(player_ai_logic, max_game_pieces):
-    current_board_col_major = tetris_base.get_blank_board()
+
+def simulate_game_for_chromosome(player_ai_logic, max_game_pieces):
+    current_board_col_major = get_blank_board()
     total_lines_cleared_game = 0
     pieces_played_game = 0
     total_lines_score = 0
-    next_piece = tetris_base.get_new_piece()
+    next_piece = get_new_piece()
 
     print(
         f"Starting optimal run: Target pieces={max_game_pieces}, Piece Seed={OPTIMAL_RUN_PIECE_SEED}"
@@ -76,9 +58,9 @@ def simulate_optimal_game_run(player_ai_logic, max_game_pieces):
 
     for piece_num in range(max_game_pieces):
         current_falling_piece = next_piece
-        next_piece = tetris_base.get_new_piece()
+        next_piece = get_new_piece()
 
-        if not tetris_base.is_valid_position(
+        if not is_valid_position(
             current_board_col_major, current_falling_piece, adj_X=0, adj_Y=0
         ):
             print(
@@ -89,40 +71,38 @@ def simulate_optimal_game_run(player_ai_logic, max_game_pieces):
         best_move_score = float("inf")
         best_move_details = None
 
-        for rot_idx in range(len(tetris_base.PIECES[current_falling_piece["shape"]])):
+        for rot_idx in range(len(PIECES[current_falling_piece["shape"]])):
             piece_this_rotation = dict(current_falling_piece)
             piece_this_rotation["rotation"] = rot_idx
 
-            for x_candidate_board_col in range(-tetris_base.TEMPLATEWIDTH + 1, tetris_base.BOARDWIDTH):
+            for x_candidate_board_col in range(-TEMPLATEWIDTH + 1, BOARDWIDTH):
                 piece_at_x = dict(piece_this_rotation)
                 piece_at_x["x"] = x_candidate_board_col
                 piece_at_x["y"] = -2
 
                 sim_piece_to_drop = dict(piece_at_x)
-                while tetris_base.is_valid_position(
+                while is_valid_position(
                     current_board_col_major, sim_piece_to_drop, adj_Y=1
                 ):
                     sim_piece_to_drop["y"] += 1
 
-                if not tetris_base.is_valid_position(
+                if not is_valid_position(
                     current_board_col_major, sim_piece_to_drop, adj_Y=0
                 ):
                     continue
 
                 safe_to_add = True
-                shape_template_for_check = tetris_base.PIECES[sim_piece_to_drop["shape"]][
+                shape_template_for_check = PIECES[sim_piece_to_drop["shape"]][
                     sim_piece_to_drop["rotation"]
                 ]
-                for y_tpl_check in range(tetris_base.TEMPLATEHEIGHT):
-                    for x_tpl_check in range(tetris_base.TEMPLATEWIDTH):
-                        if (
-                            shape_template_for_check[y_tpl_check][x_tpl_check] != tetris_base.BLANK
-                        ):
+                for y_tpl_check in range(TEMPLATEHEIGHT):
+                    for x_tpl_check in range(TEMPLATEWIDTH):
+                        if shape_template_for_check[y_tpl_check][x_tpl_check] != BLANK:
                             board_x_final = x_tpl_check + sim_piece_to_drop["x"]
                             board_y_final = y_tpl_check + sim_piece_to_drop["y"]
                             if not (
-                                0 <= board_x_final < tetris_base.BOARDWIDTH
-                                and 0 <= board_y_final < tetris_base.BOARDHEIGHT
+                                0 <= board_x_final < BOARDWIDTH
+                                and 0 <= board_y_final < BOARDHEIGHT
                             ):
                                 safe_to_add = False
                                 break
@@ -135,8 +115,8 @@ def simulate_optimal_game_run(player_ai_logic, max_game_pieces):
                 temp_board_col_major = [
                     col_data[:] for col_data in current_board_col_major
                 ]
-                tetris_base.add_to_board(temp_board_col_major, sim_piece_to_drop)
-                lines_cleared_by_this_specific_move = tetris_base.remove_complete_lines(
+                add_to_board(temp_board_col_major, sim_piece_to_drop)
+                lines_cleared_by_this_specific_move = remove_complete_lines(
                     temp_board_col_major
                 )
 
@@ -165,37 +145,33 @@ def simulate_optimal_game_run(player_ai_logic, max_game_pieces):
         # Animate the piece falling
         falling_piece = dict(final_piece_state)
         falling_piece["y"] = -2  # Start from spawn
-        while tetris_base.is_valid_position(
-            current_board_col_major, falling_piece, adj_Y=1
-        ):
+        while is_valid_position(current_board_col_major, falling_piece, adj_Y=1):
             DISPLAYSURF.fill(BGCOLOR)
-            tetris_base.draw_board(current_board_col_major)
-            tetris_base.draw_status(total_lines_score, level=1)
-            tetris_base.draw_next_piece(next_piece)
-            tetris_base.draw_piece(falling_piece)
+            draw_board(current_board_col_major)
+            draw_status(total_lines_score, level=1)
+            draw_next_piece(next_piece)
+            draw_piece(falling_piece)
             pygame.display.update()
             FPSCLOCK.tick(FPS)
             time.sleep(FALL_DELAY)
             falling_piece["y"] += 1
 
         # Final position (back up one step if invalid)
-        if not tetris_base.is_valid_position(
-            current_board_col_major, falling_piece, adj_Y=0
-        ):
+        if not is_valid_position(current_board_col_major, falling_piece, adj_Y=0):
             falling_piece["y"] -= 1
 
         # Place the piece on the board
-        tetris_base.add_to_board(current_board_col_major, falling_piece)
-        lines_this_turn = tetris_base.remove_complete_lines(current_board_col_major)
+        add_to_board(current_board_col_major, falling_piece)
+        lines_this_turn = remove_complete_lines(current_board_col_major)
         total_lines_cleared_game += lines_this_turn
-        total_lines_score += get_lines_score(lines_this_turn)
+        total_lines_score += calculate_score(lines_this_turn)
         pieces_played_game += 1
 
         # Render final state
         DISPLAYSURF.fill(BGCOLOR)
-        tetris_base.draw_board(current_board_col_major)
-        tetris_base.draw_status(total_lines_score, level=1)
-        tetris_base.draw_next_piece(next_piece)
+        draw_board(current_board_col_major)
+        draw_status(total_lines_score, level=1)
+        draw_next_piece(next_piece)
         pygame.display.update()
         FPSCLOCK.tick(FPS)
         time.sleep(FALL_DELAY)
@@ -228,8 +204,14 @@ def simulate_optimal_game_run(player_ai_logic, max_game_pieces):
             f"Starting optimal run: Target pieces={max_game_pieces}, Piece Seed={OPTIMAL_RUN_PIECE_SEED}\n"
         )
         for i in range(100, pieces_played_game + 1, 100):
-            estimated_lines = int(total_lines_cleared_game * (i / pieces_played_game)) if pieces_played_game > 0 else 0
-            f.write(f"  Optimal Run: Piece {i} placed. Total Lines: {estimated_lines}\n")
+            estimated_lines = (
+                int(total_lines_cleared_game * (i / pieces_played_game))
+                if pieces_played_game > 0
+                else 0
+            )
+            f.write(
+                f"  Optimal Run: Piece {i} placed. Total Lines: {estimated_lines}\n"
+            )
         f.write("\n--- OPTIMAL RUN COMPLETE ---\n")
         f.write(f"Pieces Played: {pieces_played_game}/{max_game_pieces}\n")
         f.write(f"Total Lines Cleared: {total_lines_cleared_game}\n")
@@ -237,6 +219,7 @@ def simulate_optimal_game_run(player_ai_logic, max_game_pieces):
     print(f"Optimal run results saved to {results_filename}")
 
     return total_lines_cleared_game, pieces_played_game
+
 
 def main_optimal_execution():
     try:
@@ -259,12 +242,13 @@ def main_optimal_execution():
         print(f"  {key}: {val:.4f}")
 
     optimal_player = OptimalPlayerLogic(weights_dict=loaded_optimal_weights)
-    simulate_optimal_game_run(optimal_player, NUM_PIECES_TEST)
+    simulate_game_for_chromosome(optimal_player, NUM_PIECES_TEST)
     pygame.quit()
 
+
 if __name__ == "__main__":
-    tetris_base.MANUAL_GAME = False
+    MANUAL_GAME = False
     print(
-        f"Running Optimal Test with MANUAL_GAME = {tetris_base.MANUAL_GAME} (from tetris_optimal_run.py context)"
+        f"Running Optimal Test with MANUAL_GAME = {MANUAL_GAME} (from tetris_optimal_run.py context)"
     )
     main_optimal_execution()

@@ -10,7 +10,7 @@ from tetris_ga_train import (
 
 OPTIMAL_RUN_PIECE_SEED = 42
 NUM_PIECES_TEST = 600
-OPTIMAL_WEIGHTS_FILE = "optimal_tetris_weights.json"
+OPTIMAL_WEIGHTS_FILE = "../reports/optimal_tetris_weights.json"
 
 random.seed(OPTIMAL_RUN_PIECE_SEED)
 np.random.seed(OPTIMAL_RUN_PIECE_SEED)
@@ -60,7 +60,7 @@ def main_optimal_execution():
     print(f"Total Score: {score}")
     print(f"Fitness: {fitness}")
 
-    results_filename = "optimal_run_results.txt"
+    results_filename = "../reports/optimal_run_results.txt"
     try:
         with open(results_filename, "w") as f:
             f.write("--- OPTIMAL RUN RESULTS ---\n")

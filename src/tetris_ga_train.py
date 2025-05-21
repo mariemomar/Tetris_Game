@@ -8,11 +8,11 @@ random.seed(RANDOM_SEED_GA)
 np.random.seed(RANDOM_SEED_GA)
 
 
-POPULATION_SIZE = 20  # >= 12
+POPULATION_SIZE = 10  # >= 12
 MUTATION_RATE = 0.1
-GENERATIONS = 30  # >= 10
-NUM_PIECES_TRAIN = 500  # 300-500
-ELITISM_COUNT = 3
+GENERATIONS = 10  # >= 10
+NUM_PIECES_TRAIN = 200  # 300-500
+ELITISM_COUNT = 2
 
 
 WEIGHT_KEYS = [
@@ -24,8 +24,8 @@ WEIGHT_KEYS = [
     "w_risk_near_top",  # Penalty for board getting too high
 ]
 
-LOG_FILE = "tetris_ga_log.txt"
-OPTIMAL_WEIGHTS_FILE = "optimal_tetris_weights.json"
+LOG_FILE = "../reports/tetris_ga_log.txt"
+OPTIMAL_WEIGHTS_FILE = "../reports/optimal_tetris_weights.json"
 
 
 class Chromosome:
@@ -40,7 +40,7 @@ class Chromosome:
         self.fitness = 0.0
         self.lines_cleared_in_game = 0
         self.pieces_played_in_game = 0
-        self.score_in_game = 0  
+        self.score_in_game = 0
 
     def get_ordered_weights_values(self):
         return [self.weights[key] for key in WEIGHT_KEYS]
@@ -111,7 +111,7 @@ def evaluate_board_state(
     col_heights = get_column_heights(board_col_major)
 
     aggregate_height = sum(col_heights)
-    max_col_h = max(col_heights) 
+    max_col_h = max(col_heights)
 
     bumpiness = 0
     if len(col_heights) > 1:

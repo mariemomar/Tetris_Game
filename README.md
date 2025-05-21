@@ -45,11 +45,10 @@ The AI uses a genetic algorithm to evolve optimal weights for evaluating Tetris 
 
 - Python 3.7+
 - Pygame 2.0+
-- NumPy (optional, for some calculations)
 
 ## Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/tetris-ai-genetic.git
-   cd tetris-ai-genetic
+   git clone https://github.com/mariemomar/Tetris_Game.git
+   cd Tetris_Game
